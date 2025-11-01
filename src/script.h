@@ -43,11 +43,17 @@ class Script : public ptl::AbstractScript<Script> {
   // native PC_RegAlias(const cmd[], const alias[], ...);
   cell PC_RegAlias(cell *params);
 
+  // native PC_RegDescription(const cmd[], const description[]);
+  cell PC_RegDescription(std::string cmd_name, std::string description);
+
   // native PC_SetFlags(const cmd[], flags);
   cell PC_SetFlags(std::string cmd_name, cell flags);
 
   // native PC_GetFlags(const cmd[]);
   cell PC_GetFlags(std::string cmd_name);
+
+  // native PC_GetDescription(const cmd[], dest[], size = sizeof dest);
+  cell PC_GetDescription(std::string cmd_name, cell *dest, cell size);
 
   // native PC_RenameCommand(const cmd[], const newname[]);
   cell PC_RenameCommand(std::string cmd_name, std::string cmd_newname);

@@ -49,6 +49,30 @@ cell Script::PC_RegAlias(cell *params) {
   return 1;
 }
 
+// native PC_RegDescription(const cmd[], const description[]);
+cell PC_RegDescription(std::string cmd_name, std::string description) {
+  cmd_name = PrepareCommandName(cmd_name);
+
+  auto &command = GetCommand(cmd_name);
+
+  for (const auto &item : cmds_) {
+    if (item.second->GetPublic() == command->GetPublic()) {
+      item.second->SetDescription(description);
+    }
+  }
+
+  return 1;
+}
+
+// native PC_GetDescription(const cmd[], dest[], size = sizeof dest);
+cell PC_GetDescription(std::string cmd_name, cell *dest, cell size) {
+  cmd_name = PrepareCommandName(cmd_name);
+
+  SetString(dest, GetCommand(cmd_name)->GetDescription(), size);
+
+  return 1;
+}
+
 // native PC_SetFlags(const cmd[], flags);
 cell Script::PC_SetFlags(std::string cmd_name, cell flags) {
   cmd_name = PrepareCommandName(cmd_name);

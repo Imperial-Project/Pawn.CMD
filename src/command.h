@@ -29,10 +29,14 @@ using PublicPtr = std::shared_ptr<ptl::Public>;
 
 class Command {
  public:
-  Command(const PublicPtr &pub, unsigned int flags = 0, bool is_alias = false)
-      : public_{pub}, flags_{flags}, is_alias_{is_alias} {}
+  Command(const PublicPtr &pub, const std::string& description = "", unsigned int flags = 0, bool is_alias = false)
+      : public_{pub}, description_{description}, flags_{flags}, is_alias_{is_alias} {}
 
   inline const PublicPtr &GetPublic() const { return public_; }
+
+  inline const std::string& GetDescription() const { return description_; }
+  
+  inline void SetDescription(const std::string& description) { description_ = description; }
 
   inline unsigned int GetFlags() const { return flags_; }
 
@@ -42,6 +46,7 @@ class Command {
 
  private:
   PublicPtr public_;
+  std::string description_;
   unsigned int flags_{};
   bool is_alias_{};
 };
