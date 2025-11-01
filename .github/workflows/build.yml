@@ -29,7 +29,9 @@ jobs:
         uses: actions/setup-python@v2
 
       - name: Install CMake
-        uses: lukka/get-cmake@v.3.23.2
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.23.2'
 
       - name: Install latest conan
         run: |
@@ -71,7 +73,9 @@ jobs:
         uses: actions/setup-python@v2
 
       - name: Install CMake
-        uses: lukka/get-cmake@v.3.23.2
+        uses: jwlawson/actions-setup-cmake@v2
+        with:
+          cmake-version: '3.23.2'
 
       - name: Install latest conan
         run: |
