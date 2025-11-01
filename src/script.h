@@ -104,7 +104,7 @@ class Script : public ptl::AbstractScript<Script> {
 
   const CmdArrayPtr &GetCmdArray(cell ptr);
 
-  void InitFlagsAndAliases();
+  void InitFlagsAndAliasesAndDescriptions();
 
   static std::string PrepareCommandName(const std::string &name);
 

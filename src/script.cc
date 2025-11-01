@@ -50,7 +50,7 @@ cell Script::PC_RegAlias(cell *params) {
 }
 
 // native PC_RegDescription(const cmd[], const description[]);
-cell PC_RegDescription(std::string cmd_name, std::string description) {
+cell Script::PC_RegDescription(std::string cmd_name, std::string description) {
   cmd_name = PrepareCommandName(cmd_name);
 
   auto &command = GetCommand(cmd_name);
@@ -65,7 +65,7 @@ cell PC_RegDescription(std::string cmd_name, std::string description) {
 }
 
 // native PC_GetDescription(const cmd[], dest[], size = sizeof dest);
-cell PC_GetDescription(std::string cmd_name, cell *dest, cell size) {
+cell Script::PC_GetDescription(std::string cmd_name, cell *dest, cell size) {
   cmd_name = PrepareCommandName(cmd_name);
 
   SetString(dest, GetCommand(cmd_name)->GetDescription(), size);
@@ -249,7 +249,7 @@ void Script::NewCommand(const std::string &name, const PublicPtr &pub,
     throw std::runtime_error{"Command name '" + name + "' is occupied"};
   }
 
-  cmds_[name] = std::make_shared<Command>(pub, flags, is_alias);
+  cmds_[name] = std::make_shared<Command>(pub, "", flags, is_alias);
 }
 
 const CommandPtr &Script::GetCommand(const std::string &name, bool strict) {

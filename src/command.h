@@ -34,7 +34,7 @@ class Command {
 
   inline const PublicPtr &GetPublic() const { return public_; }
 
-  inline const std::string& GetDescription() const { return description_; }
+  inline const std::string GetDescription() const { return description_; }
   
   inline void SetDescription(const std::string& description) { description_ = description; }
 
@@ -46,7 +46,7 @@ class Command {
 
  private:
   PublicPtr public_;
-  std::string description_;
+  std::string description_{};
   unsigned int flags_{};
   bool is_alias_{};
 };

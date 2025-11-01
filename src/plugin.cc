@@ -30,8 +30,13 @@ bool Plugin::OnLoad() {
   RegisterNative<&Script::PC_Init>("PC_Init");
 
   RegisterNative<&Script::PC_RegAlias, false>("PC_RegAlias");
+  RegisterNative<&Script::PC_RegDescription>("PC_RegDescription");
+
   RegisterNative<&Script::PC_SetFlags>("PC_SetFlags");
   RegisterNative<&Script::PC_GetFlags>("PC_GetFlags");
+
+  RegisterNative<&Script::PC_GetDescription>("PC_GetDescription");
+
   RegisterNative<&Script::PC_RenameCommand>("PC_RenameCommand");
   RegisterNative<&Script::PC_CommandExists>("PC_CommandExists");
   RegisterNative<&Script::PC_DeleteCommand>("PC_DeleteCommand");
