@@ -44,13 +44,13 @@ jobs:
           cmake --build . --config Release
 
       - name: Upload artifacts (part 1)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pawncmd-${{ env.PLUGIN_VERSION }}-win32
           path: build/Release/pawncmd.dll
 
       - name: Upload artifacts (part 2)
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pawncmd-${{ env.PLUGIN_VERSION }}-win32
           path: src/Pawn.CMD.inc
@@ -90,7 +90,7 @@ jobs:
         run: tar -czf pawncmd-$PLUGIN_VERSION-linux.tar.gz -C build pawncmd.so -C ../src Pawn.CMD.inc
 
       - name: Upload artifacts
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: pawncmd-${{ env.PLUGIN_VERSION }}-linux
           path: pawncmd-${{ env.PLUGIN_VERSION }}-linux.tar.gz

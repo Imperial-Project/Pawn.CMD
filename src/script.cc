@@ -26,7 +26,7 @@
 
 // native PC_Init();
 cell Script::PC_Init() {
-  InitFlagsAndAliases();
+  InitFlagsAndAliasesAndDescriptions();
 
   return 1;
 }
@@ -176,10 +176,13 @@ bool Script::OnLoad() {
       std::string cmd_name = PrepareCommandName(match[1].str());
 
       NewCommand(cmd_name, MakePublic(public_name, plugin.UseCaching()));
+
+    } else if (std::regex_match(public_name, regex_public_cmd_description_)) {
+      init_flags_and_aliases_and_descriptions_pubs_.push_back(MakePublic(public_name));
     } else if (std::regex_match(public_name, regex_public_cmd_alias_)) {
-      init_flags_and_aliases_pubs_.push_back(MakePublic(public_name));
+      init_flags_and_aliases_and_descriptions_pubs_.push_back(MakePublic(public_name));
     } else if (std::regex_match(public_name, regex_public_cmd_flags_)) {
-      init_flags_and_aliases_pubs_.push_front(MakePublic(public_name));
+      init_flags_and_aliases_and_descriptions_pubs_.push_front(MakePublic(public_name));
     } else if (plugin.LegacyOpctSupport() &&
                public_name == "OnPlayerCommandText") {
       opct_public_ = MakePublic(public_name, plugin.UseCaching());
@@ -316,8 +319,8 @@ const CmdArrayPtr &Script::GetCmdArray(cell ptr) {
   return *iter;
 }
 
-void Script::InitFlagsAndAliases() {
-  for (const auto &pub : init_flags_and_aliases_pubs_) {
+void Script::InitFlagsAndAliasesAndDescriptions() {
+  for (const auto &pub : init_flags_and_aliases_and_descriptions_pubs_) {
     if (pub && pub->Exists()) {
       pub->Exec();
     }

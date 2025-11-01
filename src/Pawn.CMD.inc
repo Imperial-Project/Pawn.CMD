@@ -42,8 +42,13 @@
         native PC_Init(); // internal
 
         native PC_RegAlias(const cmd[], const alias[], ...);
+        native PC_RegDescription(const cmd[], const description[]);
+
         native PC_SetFlags(const cmd[], flags);
         native PC_GetFlags(const cmd[]);
+
+        native PC_GetDescription(const cmd[], dest[], size = sizeof dest);
+
         native PC_RenameCommand(const cmd[], const newname[]);
         native PC_CommandExists(const cmd[]);
         native PC_DeleteCommand(const cmd[]);
@@ -76,6 +81,11 @@
             forward pc_alias_%0(); \
             public pc_alias_%0() \
                 PC_RegAlias(#%0, %1);
+
+        #define description:%0(%1) \
+            forward pc_description_%0(); \
+            public pc_description_%0() \
+                PC_RegDescription(#%0, #%1);
 
         #define flags:%0(%1) \
             forward pc_flags_%0(); \

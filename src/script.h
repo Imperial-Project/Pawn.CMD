@@ -111,6 +111,7 @@ class Script : public ptl::AbstractScript<Script> {
  private:
   const std::regex regex_public_cmd_name_{R"(pc_cmd_(\w+))"};
   const std::regex regex_public_cmd_alias_{R"(pc_alias_\w+)"};
+  const std::regex regex_public_cmd_description_{R"(pc_description_\w+)"};
   const std::regex regex_public_cmd_flags_{R"(pc_flags_\w+)"};
 
   std::unordered_map<std::string, CommandPtr> cmds_;
@@ -121,7 +122,7 @@ class Script : public ptl::AbstractScript<Script> {
 
   std::unordered_set<std::shared_ptr<CmdArray>> cmd_arrays_;
 
-  std::deque<PublicPtr> init_flags_and_aliases_pubs_;
+  std::deque<PublicPtr> init_flags_and_aliases_and_descriptions_pubs_;
 };
 
 #endif  // PAWNCMD_SCRIPT_H_
