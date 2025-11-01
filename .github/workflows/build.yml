@@ -25,11 +25,48 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
-      - name: Setup MSVC 2019 Environment
-        uses: ilammy/msvc-dev-cmd@v1
-        with:
-          arch: x86
-          toolset: 14.29
+      - name: Install Visual Studio 2019 Build Tools
+        run: |
+          # Скачиваем установщик VS 2019
+          $url = "https://aka.ms/vs/16/release/vs_buildtools.exe"
+          $installer = "$env:TEMP\vs_buildtools_2019.exe"
+          Invoke-WebRequest -Uri $url -OutFile $installer
+          
+          # Устанавливаем с C++ инструментами
+          $args = @(
+            '--quiet',
+            '--wait', 
+            '--norestart',
+            '--nocache',
+            '--installPath', 'C:\VS2019',
+            '--add', 'Microsoft.VisualStudio.Workload.VCTools',
+            '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64',
+            '--add', 'Microsoft.VisualStudio.Component.Windows10SDK'
+          )
+          Start-Process -FilePath $installer -ArgumentList $args -Wait
+          timeout /t 30
+          
+      - name: Verify VS 2019 installation
+        run: |
+          if (Test-Path "C:\VS2019\VC\Auxiliary\Build\vcvarsall.bat") {
+            echo "VS 2019 installed successfully at C:\VS2019"
+          } else {
+            echo "VS 2019 installation failed"
+            Get-ChildItem "C:\" -Recurse -Filter "*2019*" -ErrorAction SilentlyContinue | Select-Object FullName
+            exit 1
+          }
+          
+      - name: Setup VS 2019 Environment manually
+        run: |
+          # Используем vcvarsall от VS 2019
+          cmd.exe /c "call `"C:\VS2019\VC\Auxiliary\Build\vcvarsall.bat`" x64 && set > env_vars.txt"
+          Get-Content env_vars.txt | ForEach-Object { 
+            if ($_ -match "^(.*?)=(.*)$") {
+              $name = $matches[1]
+              $value = $matches[2]
+              Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
+            }
+          }
 
       - name: Setup Python
         uses: actions/setup-python@v2
