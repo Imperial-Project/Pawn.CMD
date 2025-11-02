@@ -16,90 +16,6 @@ env:
   PLUGIN_VERSION: 3.4.0-omp
 
 jobs:
-  build-windows-release:
-    runs-on: windows-latest
-    steps:
-      - uses: actions/checkout@v3
-        with:
-          clean: true
-          submodules: recursive
-          fetch-depth: 0
-
-      - name: Install Visual Studio 2019 Build Tools
-        run: |
-          # Скачиваем установщик VS 2019
-          $url = "https://aka.ms/vs/16/release/vs_buildtools.exe"
-          $installer = "$env:TEMP\vs_buildtools_2019.exe"
-          Invoke-WebRequest -Uri $url -OutFile $installer
-          
-          # Устанавливаем с C++ инструментами
-          $args = @(
-            '--quiet',
-            '--wait', 
-            '--norestart',
-            '--nocache',
-            '--installPath', 'C:\VS2019',
-            '--add', 'Microsoft.VisualStudio.Workload.VCTools',
-            '--add', 'Microsoft.VisualStudio.Component.VC.Tools.x86.x64',
-            '--add', 'Microsoft.VisualStudio.Component.Windows10SDK'
-          )
-          Start-Process -FilePath $installer -ArgumentList $args -Wait
-          timeout /t 30
-          
-      - name: Verify VS 2019 installation
-        run: |
-          if (Test-Path "C:\VS2019\VC\Auxiliary\Build\vcvarsall.bat") {
-            echo "VS 2019 installed successfully at C:\VS2019"
-          } else {
-            echo "VS 2019 installation failed"
-            Get-ChildItem "C:\" -Recurse -Filter "*2019*" -ErrorAction SilentlyContinue | Select-Object FullName
-            exit 1
-          }
-          
-      - name: Setup VS 2019 Environment manually
-        run: |
-          # Используем vcvarsall от VS 2019
-          cmd.exe /c "call `"C:\VS2019\VC\Auxiliary\Build\vcvarsall.bat`" x64 && set > env_vars.txt"
-          Get-Content env_vars.txt | ForEach-Object { 
-            if ($_ -match "^(.*?)=(.*)$") {
-              $name = $matches[1]
-              $value = $matches[2]
-              Add-Content -Path $env:GITHUB_ENV -Value "$name=$value"
-            }
-          }
-
-      - name: Setup Python
-        uses: actions/setup-python@v2
-
-      - name: Install CMake
-        uses: jwlawson/actions-setup-cmake@v2
-        with:
-          cmake-version: '3.23.2'
-
-      - name: Install latest conan
-        run: |
-          python -m pip install --upgrade pip
-          pip install conan
-
-      - name: Generate build files
-        run: |
-          mkdir build
-          cd build
-          cmake -DCMAKE_BUILD_TYPE=Release .. -G "Visual Studio 16 2019" -A Win32
-          cmake --build . --config Release
-
-      - name: Upload artifacts (part 1)
-        uses: actions/upload-artifact@v4
-        with:
-          name: pawncmd-${{ env.PLUGIN_VERSION }}-win32
-          path: build/Release/pawncmd.dll
-
-      - name: Upload artifacts (part 2)
-        uses: actions/upload-artifact@v4
-        with:
-          name: pawncmd-${{ env.PLUGIN_VERSION }}-win32
-          path: src/Pawn.CMD.inc
-
   build-linux-release:
     runs-on: ubuntu-latest
     steps:
@@ -110,7 +26,10 @@ jobs:
           fetch-depth: 0
 
       - name: Install packages
-        run: sudo apt-get install g++-multilib
+        run: |
+          sudo dpkg --add-architecture i386
+          sudo apt-get update
+          sudo apt-get install -y g++-multilib gcc-multilib libc6-dev-i386
 
       - uses: actions/setup-python@v6
         with:
@@ -119,12 +38,18 @@ jobs:
       - name: Install CMake
         uses: jwlawson/actions-setup-cmake@v2
         with:
-          cmake-version: '3.23.2'
-
+          cmake-version: '3.25.1'
+    
       - name: Install latest conan
         run: |
           python -m pip install --upgrade pip
           pip3 install conan==1.57.0
+  
+      - name: Setup Conan profile
+        run: |
+          conan profile new default --detect --force
+          conan profile update settings.compiler.version=12 default
+          conan profile update settings.compiler=gcc default
 
       - name: Generate build files
         run: mkdir build && cd build && cmake .. -DCMAKE_BUILD_TYPE=Release -DCMAKE_C_FLAGS=-m32 -DCMAKE_CXX_FLAGS=-m32
